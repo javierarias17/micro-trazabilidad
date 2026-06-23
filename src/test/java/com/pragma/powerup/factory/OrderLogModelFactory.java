@@ -79,4 +79,65 @@ public class OrderLogModelFactory {
                         .build()
         );
     }
+
+    public static List<OrderLogModel> createCompletedOrderLogs() {
+        return List.of(
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .previousStatus(null).newStatus(OrderStatus.PENDIENTE.name())
+                        .date(DATE_FIRST_TRANSITION).build(),
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(EMPLOYEE_ID)
+                        .previousStatus(OrderStatus.PENDIENTE.name()).newStatus(OrderStatus.EN_PREPARACION.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(5)).build(),
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(EMPLOYEE_ID)
+                        .previousStatus(OrderStatus.EN_PREPARACION.name()).newStatus(OrderStatus.LISTO.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(25)).build(),
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(EMPLOYEE_ID)
+                        .previousStatus(OrderStatus.LISTO.name()).newStatus(OrderStatus.ENTREGADO.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(30)).build()
+        );
+    }
+
+    public static List<OrderLogModel> createMultiEmployeeLogs() {
+        Long secondOrderId = 43L;
+        Long secondEmployeeId = 5L;
+        return List.of(
+                // Order 42 — employee 3 — 10 min
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .previousStatus(null).newStatus(OrderStatus.PENDIENTE.name())
+                        .date(DATE_FIRST_TRANSITION).build(),
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(EMPLOYEE_ID)
+                        .previousStatus(OrderStatus.PENDIENTE.name()).newStatus(OrderStatus.EN_PREPARACION.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(1)).build(),
+                OrderLogModel.builder()
+                        .orderId(ORDER_ID).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(EMPLOYEE_ID)
+                        .previousStatus(OrderStatus.EN_PREPARACION.name()).newStatus(OrderStatus.ENTREGADO.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(10)).build(),
+                // Order 43 — employee 5 — 30 min
+                OrderLogModel.builder()
+                        .orderId(secondOrderId).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .previousStatus(null).newStatus(OrderStatus.PENDIENTE.name())
+                        .date(DATE_FIRST_TRANSITION).build(),
+                OrderLogModel.builder()
+                        .orderId(secondOrderId).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(secondEmployeeId)
+                        .previousStatus(OrderStatus.PENDIENTE.name()).newStatus(OrderStatus.EN_PREPARACION.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(1)).build(),
+                OrderLogModel.builder()
+                        .orderId(secondOrderId).restaurantId(RESTAURANT_ID).customerId(CUSTOMER_ID)
+                        .employeeId(secondEmployeeId)
+                        .previousStatus(OrderStatus.EN_PREPARACION.name()).newStatus(OrderStatus.ENTREGADO.name())
+                        .date(DATE_FIRST_TRANSITION.plusMinutes(30)).build()
+        );
+    }
 }

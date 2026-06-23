@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IOrderLogMongoRepository extends MongoRepository<OrderLogDocument, String> {
     List<OrderLogDocument> findAllByOrderId(Long orderId);
+    List<OrderLogDocument> findAllByRestaurantId(Long restaurantId);
 }

@@ -17,13 +17,17 @@ public class OrderLogMongoAdapter implements IOrderLogPersistencePort {
 
     @Override
     public void save(OrderLogModel orderLogModel) {
-        OrderLogDocument document = orderLogDocumentMapper.toDocument(orderLogModel);
-        orderLogMongoRepository.save(document);
+        orderLogMongoRepository.save(orderLogDocumentMapper.toDocument(orderLogModel));
     }
 
     @Override
     public List<OrderLogModel> findAllByOrderId(Long orderId) {
-        List<OrderLogDocument> documents = orderLogMongoRepository.findAllByOrderId(orderId);
+        return orderLogDocumentMapper.toModelList(orderLogMongoRepository.findAllByOrderId(orderId));
+    }
+
+    @Override
+    public List<OrderLogModel> findAllByRestaurantId(Long restaurantId) {
+        List<OrderLogDocument> documents = orderLogMongoRepository.findAllByRestaurantId(restaurantId);
         return orderLogDocumentMapper.toModelList(documents);
     }
 }

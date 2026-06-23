@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-@Tag(name = "Order Traceability", description = "Endpoints for recording and querying the status change history of orders")
+@Tag(name = "order-log-rest-controller", description = "Endpoints for recording and querying the status change history of orders")
 public interface IOrderLogRestControllerDocs {
 
     @Operation(

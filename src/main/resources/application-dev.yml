@@ -5,3 +5,8 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
+
+adapter:
+  micro-plazoleta:
+    url: ${PLAZOLETA_SERVICE_URL}
+    timeout: 5000

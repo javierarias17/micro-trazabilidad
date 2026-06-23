@@ -7,4 +7,5 @@ import java.util.List;
 public interface IOrderLogPersistencePort {
     void save(OrderLogModel orderLogModel);
     List<OrderLogModel> findAllByOrderId(Long orderId);
+    List<OrderLogModel> findAllByRestaurantId(Long restaurantId);
 }
