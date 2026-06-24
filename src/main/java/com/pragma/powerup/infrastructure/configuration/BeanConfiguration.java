@@ -10,15 +10,13 @@ import com.pragma.powerup.domain.usecase.CreateOrderLogUseCase;
 import com.pragma.powerup.domain.usecase.GetOrderEfficiencyUseCase;
 import com.pragma.powerup.domain.usecase.GetOrderHistoryUseCase;
 import com.pragma.powerup.infrastructure.out.http.adapter.PlazoletaServiceAdapter;
+import com.pragma.powerup.infrastructure.out.http.client.IPlazoletaServiceFeignClient;
 import com.pragma.powerup.infrastructure.out.mongo.adapter.OrderLogMongoAdapter;
 import com.pragma.powerup.infrastructure.out.mongo.mapper.IOrderLogDocumentMapper;
 import com.pragma.powerup.infrastructure.out.mongo.repository.IOrderLogMongoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,24 +25,11 @@ public class BeanConfiguration {
     private final IOrderLogMongoRepository orderLogMongoRepository;
     private final IOrderLogDocumentMapper orderLogDocumentMapper;
     private final IAuthenticatedUserPort authenticatedUserPort;
-
-    @Value("${adapter.micro-plazoleta.url}")
-    private String plazoletaServiceUrl;
-
-    @Value("${adapter.micro-plazoleta.timeout}")
-    private int plazoletaServiceTimeout;
-
-    @Bean
-    public RestTemplate restTemplate() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(plazoletaServiceTimeout);
-        factory.setReadTimeout(plazoletaServiceTimeout);
-        return new RestTemplate(factory);
-    }
+    private final IPlazoletaServiceFeignClient plazoletaServiceFeignClient;
 
     @Bean
     public IPlazoletaServicePort plazoletaServicePort() {
-        return new PlazoletaServiceAdapter(restTemplate(), plazoletaServiceUrl);
+        return new PlazoletaServiceAdapter(plazoletaServiceFeignClient);
     }
 
     @Bean
