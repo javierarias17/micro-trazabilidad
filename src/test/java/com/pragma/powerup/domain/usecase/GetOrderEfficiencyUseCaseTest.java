@@ -5,7 +5,6 @@ import com.pragma.powerup.domain.model.EmployeeRankingModel;
 import com.pragma.powerup.domain.model.OrderEfficiencyModel;
 import com.pragma.powerup.domain.model.OrderLogModel;
 import com.pragma.powerup.domain.model.RestaurantEfficiencyModel;
-import com.pragma.powerup.domain.spi.IAuthenticatedUserPort;
 import com.pragma.powerup.domain.spi.IOrderLogPersistencePort;
 import com.pragma.powerup.domain.spi.IPlazoletaServicePort;
 import com.pragma.powerup.factory.OrderLogModelFactory;
@@ -28,14 +27,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GetOrderEfficiencyUseCaseTest {
 
-    private static final String ROLE_OWNER = "OWNER";
-    private static final String ROLE_CUSTOMER = "CUSTOMER";
-
     @Mock
     private IOrderLogPersistencePort orderLogPersistencePort;
-
-    @Mock
-    private IAuthenticatedUserPort authenticatedUserPort;
 
     @Mock
     private IPlazoletaServicePort plazoletaServicePort;
@@ -45,7 +38,7 @@ class GetOrderEfficiencyUseCaseTest {
     @BeforeEach
     void setUp() {
         getOrderEfficiencyUseCase = new GetOrderEfficiencyUseCase(
-                orderLogPersistencePort, authenticatedUserPort, plazoletaServicePort);
+                orderLogPersistencePort, plazoletaServicePort);
     }
 
     // ─── Happy paths
@@ -54,7 +47,6 @@ class GetOrderEfficiencyUseCaseTest {
     void When_OwnerRequestsEfficiency_Expect_CompletedOrdersAndRankingReturned() {
         // Arrange
         List<OrderLogModel> logs = OrderLogModelFactory.createCompletedOrderLogs();
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_OWNER);
         when(plazoletaServicePort.isOwnerOfRestaurant(RESTAURANT_ID)).thenReturn(true);
         when(orderLogPersistencePort.findAllByRestaurantId(RESTAURANT_ID)).thenReturn(logs);
 
@@ -77,7 +69,6 @@ class GetOrderEfficiencyUseCaseTest {
     @Test
     void When_NoLogsExist_Expect_EmptyLists() {
         // Arrange
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_OWNER);
         when(plazoletaServicePort.isOwnerOfRestaurant(RESTAURANT_ID)).thenReturn(true);
         when(orderLogPersistencePort.findAllByRestaurantId(RESTAURANT_ID)).thenReturn(Collections.emptyList());
 
@@ -93,7 +84,6 @@ class GetOrderEfficiencyUseCaseTest {
     void When_OrderNotCompleted_Expect_ExcludedFromEfficiency() {
         // Arrange: only PENDIENTE and EN_PREPARACION logs — no ENTREGADO
         List<OrderLogModel> logs = OrderLogModelFactory.createLogHistory();
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_OWNER);
         when(plazoletaServicePort.isOwnerOfRestaurant(RESTAURANT_ID)).thenReturn(true);
         when(orderLogPersistencePort.findAllByRestaurantId(RESTAURANT_ID)).thenReturn(logs);
 
@@ -109,7 +99,6 @@ class GetOrderEfficiencyUseCaseTest {
     void When_MultipleEmployees_Expect_RankingSortedByAverageDurationAscending() {
         // Arrange: two orders handled by different employees
         List<OrderLogModel> logs = OrderLogModelFactory.createMultiEmployeeLogs();
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_OWNER);
         when(plazoletaServicePort.isOwnerOfRestaurant(RESTAURANT_ID)).thenReturn(true);
         when(orderLogPersistencePort.findAllByRestaurantId(RESTAURANT_ID)).thenReturn(logs);
 
@@ -126,19 +115,8 @@ class GetOrderEfficiencyUseCaseTest {
     // ─── Exception paths
 
     @Test
-    void Expect_ForbiddenException_When_NonOwnerRequestsEfficiency() {
-        // Arrange
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_CUSTOMER);
-
-        // Act & Assert
-        assertThrows(ForbiddenException.class,
-                () -> getOrderEfficiencyUseCase.getOrderEfficiency(RESTAURANT_ID));
-    }
-
-    @Test
     void Expect_ForbiddenException_When_OwnerDoesNotOwnRestaurant() {
         // Arrange
-        when(authenticatedUserPort.getAuthenticatedUserRole()).thenReturn(ROLE_OWNER);
         when(plazoletaServicePort.isOwnerOfRestaurant(RESTAURANT_ID)).thenReturn(false);
 
         // Act & Assert

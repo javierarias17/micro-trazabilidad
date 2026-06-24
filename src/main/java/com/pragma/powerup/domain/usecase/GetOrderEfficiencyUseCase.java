@@ -1,14 +1,12 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IGetOrderEfficiencyServicePort;
-import com.pragma.powerup.domain.common.DomainConstants;
 import com.pragma.powerup.domain.exception.ForbiddenException;
 import com.pragma.powerup.domain.model.EmployeeRankingModel;
 import com.pragma.powerup.domain.model.OrderEfficiencyModel;
 import com.pragma.powerup.domain.model.OrderLogModel;
 import com.pragma.powerup.domain.model.OrderStatus;
 import com.pragma.powerup.domain.model.RestaurantEfficiencyModel;
-import com.pragma.powerup.domain.spi.IAuthenticatedUserPort;
 import com.pragma.powerup.domain.spi.IOrderLogPersistencePort;
 import com.pragma.powerup.domain.spi.IPlazoletaServicePort;
 
@@ -26,22 +24,16 @@ public class GetOrderEfficiencyUseCase implements IGetOrderEfficiencyServicePort
     private static final double DEFAULT_AVERAGE_DURATION = 0.0;
 
     private final IOrderLogPersistencePort orderLogPersistencePort;
-    private final IAuthenticatedUserPort authenticatedUserPort;
     private final IPlazoletaServicePort plazoletaServicePort;
 
     public GetOrderEfficiencyUseCase(IOrderLogPersistencePort orderLogPersistencePort,
-                                     IAuthenticatedUserPort authenticatedUserPort,
                                      IPlazoletaServicePort plazoletaServicePort) {
         this.orderLogPersistencePort = orderLogPersistencePort;
-        this.authenticatedUserPort = authenticatedUserPort;
         this.plazoletaServicePort = plazoletaServicePort;
     }
 
     @Override
     public RestaurantEfficiencyModel getOrderEfficiency(Long restaurantId) {
-        if (!DomainConstants.ROLE_OWNER.equals(authenticatedUserPort.getAuthenticatedUserRole())) {
-            throw new ForbiddenException();
-        }
         if (!plazoletaServicePort.isOwnerOfRestaurant(restaurantId)) {
             throw new ForbiddenException();
         }

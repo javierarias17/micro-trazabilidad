@@ -64,6 +64,6 @@ public class BeanConfiguration {
 
     @Bean
     public IGetOrderEfficiencyServicePort getOrderEfficiencyServicePort() {
-        return new GetOrderEfficiencyUseCase(orderLogPersistencePort(), authenticatedUserPort, plazoletaServicePort());
+        return new GetOrderEfficiencyUseCase(orderLogPersistencePort(), plazoletaServicePort());
     }
 }
